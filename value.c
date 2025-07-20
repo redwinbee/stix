@@ -24,3 +24,7 @@ void free_value_array(ValueArray *array) {
     FREE_ARRAY(value_t, array->values, array->capacity);
     init_value_array(array);
 }
+
+void print_value(value_t value) {
+    printf("%g", value);
+}
