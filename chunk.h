@@ -15,7 +15,7 @@ typedef struct {
     int count;              /* current number of operations. */
     uint8_t* code;          /* operation code. */
     int* lines;             /* array of lines in the bytecode. */
-    ValueArray constants;   /* immediate values accessible to this chunk. */
+    value_array_t constants;   /* immediate values accessible to this chunk. */
 } Chunk;
 
 void init_chunk(Chunk* chunk);
