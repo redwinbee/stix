@@ -41,4 +41,5 @@ interpret_result run(void) {
     }
 
     #undef READ_BYTE
+    #undef READ_CONSTANT
 }
