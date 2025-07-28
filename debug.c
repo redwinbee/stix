@@ -26,6 +26,14 @@ int disassemble_instruction(Chunk *chunk, int offset) {
     switch (instruction) {
         case OP_RETURN:
             return simple_instruction("OP_RETURN", offset);
+        case OP_ADDITION:
+            return simple_instruction("OP_ADDITION", offset);
+        case OP_SUBTRACTION:
+            return simple_instruction("OP_SUBTRACTION", offset);
+        case OP_MULTIPLICATION:
+            return simple_instruction("OP_MULTIPLICATIOJ", offset);
+        case OP_DIVISION:
+            return simple_instruction("OP_DIVISION", offset);
         case OP_NEGATE:
             return simple_instruction("OP_NEGATE", offset);
         case OP_CONSTANT:

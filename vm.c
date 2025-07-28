@@ -24,6 +24,13 @@ interpret_result interpret(Chunk *chunk) {
 interpret_result run(void) {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+    /* todo: move this somewhere else rather than hacking the c preprocessor. */
+    #define BINARY_OP(op) \
+        do { \
+            double b = pop(); \
+            double a = pop(); \
+            push(a op b); \
+        } while (false)
 
     for (;;) {
         #ifdef DEBUG_TRACE_EXECUTION
@@ -46,6 +53,11 @@ interpret_result run(void) {
                 return INTERPRET_OK;
             }
 
+            case OP_ADDITION:       BINARY_OP(+); break;
+            case OP_SUBTRACTION:    BINARY_OP(-); break;
+            case OP_MULTIPLICATION: BINARY_OP(*); break;
+            case OP_DIVISION:       BINARY_OP(/); break;
+
             case OP_NEGATE: {
                 push(-pop());
                 break;
@@ -61,6 +73,7 @@ interpret_result run(void) {
 
     #undef READ_BYTE
     #undef READ_CONSTANT
+    #undef BINARY_OP
 }
 
 void reset_stack(void) {

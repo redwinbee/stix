@@ -6,9 +6,13 @@
 #include <stdint.h>
 
 typedef enum {
-    OP_CONSTANT,    /* store a constant value. */
-    OP_NEGATE,      /* negation operator on values. */
-    OP_RETURN,      /* return from the current function. */
+    OP_CONSTANT,        /* store a constant value. */
+    OP_ADDITION,        /* the binary addition operator. */
+    OP_SUBTRACTION,     /* the binary subtraction operator. */
+    OP_MULTIPLICATION,  /* the binary multiplicaton operator. */
+    OP_DIVISION,        /* the binary division operator. */
+    OP_NEGATE,          /* negation operator on values. */
+    OP_RETURN,          /* return from the current function. */
 } OpCode;
 
 typedef struct {
