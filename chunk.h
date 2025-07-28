@@ -7,6 +7,7 @@
 
 typedef enum {
     OP_CONSTANT,    /* store a constant value. */
+    OP_NEGATE,      /* negation operator on values. */
     OP_RETURN,      /* return from the current function. */
 } OpCode;
 

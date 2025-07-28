@@ -46,6 +46,11 @@ interpret_result run(void) {
                 return INTERPRET_OK;
             }
 
+            case OP_NEGATE: {
+                push(-pop());
+                break;
+            }
+
             case OP_CONSTANT: {
                 value_t constant = READ_CONSTANT();
                 push(constant);
