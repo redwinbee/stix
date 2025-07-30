@@ -15,10 +15,9 @@ void free_vm(void) {
 
 }
 
-interpret_result interpret(Chunk *chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+interpret_result interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }
 
 interpret_result run(void) {
