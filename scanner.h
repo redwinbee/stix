@@ -54,7 +54,19 @@ typedef struct {
 void init_scanner(const char* source);
 token_t scan_token();
 bool is_at_end();
+bool is_digit(char c);
+bool is_alpha(char c);
 token_t make_token(token_type type);
 token_t error_token(const char* message);
+char advance(void);
+bool match(char expected);
+void skip_whitespace(void);
+char peek(void);
+char peek_next(void);
+token_t string(void);
+token_t number(void);
+token_t identifier(void);
+token_type identifier_type(void);
+token_type check_keyword(int length, const char* remaining, token_type type);
 
 #endif

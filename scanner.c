@@ -19,13 +19,48 @@ void init_scanner(const char *source) {
 }
 
 token_t scan_token() {
+    skip_whitespace();
     scanner.start = scanner.current;
     if (is_at_end()) return make_token(TOKEN_EOF);
+
+    char ch = advance();
+    if (is_alpha(ch)) return identifier();
+    if (is_digit(ch)) return number();
+
+    switch (ch) {
+        case '(': return make_token(TOKEN_LEFT_PAREN);
+        case ')': return make_token(TOKEN_RIGHT_PAREN);
+        case '{': return make_token(TOKEN_LEFT_BRACE);
+        case '}': return make_token(TOKEN_RIGHT_BRACE);
+        case ';': return make_token(TOKEN_SEMICOLON);
+        case '.': return make_token(TOKEN_DOT);
+        case ',': return make_token(TOKEN_COMMA);
+        case '-': return make_token(TOKEN_MINUS);
+        case '+': return make_token(TOKEN_PLUS);
+        case '*': return make_token(TOKEN_STAR);
+        case '/': return make_token(TOKEN_SLASH);
+
+        case '=': return make_token(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
+        case '!': return make_token(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
+        case '<': return make_token(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
+        case '>': return make_token(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+
+        case '"': return string();
+    }
+
     return error_token("unexpected character.");
 }
 
 bool is_at_end() {
     return *scanner.current == '\0';
+}
+
+bool is_digit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+bool is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
 token_t make_token(token_type type) {
@@ -44,4 +79,123 @@ token_t error_token(const char* message) {
     token.length = (int)strlen(message);
     token.line = scanner.line;
     return token;
+}
+
+char advance(void) {
+    scanner.current++;
+    return scanner.current[-1];
+}
+
+bool match(char expected) {
+    if (is_at_end()) return false;
+    if (*scanner.current != expected) return false;
+    scanner.current++;
+    return true;
+}
+
+void skip_whitespace(void) {
+    for (;;) {
+        char ch = peek();
+        switch (ch) {
+            case ' ':
+            case '\t':
+            case '\r':
+                advance();
+                break;
+            case '\n':
+                scanner.line++;
+                advance();
+                break;
+            case '/':   /* todo: move to skip_comment() if we support more elaborate commenting.  */
+                if (peek_next() == '/') {
+                    while (peek() != '\n' && !is_at_end()) advance();
+                } else {
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+    }
+}
+
+char peek(void) {
+    return *scanner.current;
+}
+
+char peek_next(void) {
+    if (is_at_end()) return '\0';
+    return scanner.current[1];
+}
+
+token_t string(void) {
+    while (peek() != '"' && !is_at_end()) {
+        if (peek() == '\n') scanner.line++;
+        advance();
+    }
+
+    if (is_at_end()) return error_token("unterminated string.");
+
+    advance();
+    return make_token(TOKEN_STRING);
+}
+
+token_t number(void) {
+    while (is_digit(peek())) advance();
+
+    /* consume the fractional part of the number, if any */
+    if (peek() == '.' && is_digit(peek_next())) {
+        advance();
+        while (is_digit(peek())) advance();
+    }
+
+    return make_token(TOKEN_NUMBER);
+}
+
+token_t identifier(void) {
+    while (is_alpha(peek()) || is_digit(peek())) advance();
+    return make_token(identifier_type());
+}
+
+token_type identifier_type(void) {
+    switch (scanner.start[0]) {
+        case 'a': return check_keyword(2, "nd", TOKEN_AND);
+        case 'c': return check_keyword(4, "lass", TOKEN_CLASS);
+        case 'e': return check_keyword(4, "lse", TOKEN_ELSE);
+        case 'i': return check_keyword(1, "f", TOKEN_IF);
+        case 'n': return check_keyword(3, "il", TOKEN_NIL);
+        case 'o': return check_keyword(2, "r", TOKEN_OR);
+        case 'p': return check_keyword(5, "rint", TOKEN_PRINT);
+        case 'r': return check_keyword(5, "turn", TOKEN_RETURN);
+        case 's': return check_keyword(5, "uper", TOKEN_SUPER);
+        case 'v': return check_keyword(3, "ar", TOKEN_VAR);
+        case 'w': return check_keyword(5, "hile", TOKEN_WHILE);
+        case 'f': {
+            if (scanner.current - scanner.start > 1) {
+                switch(scanner.start[1]) {
+                    case 'a': return check_keyword(3, "lse", TOKEN_FALSE);
+                    case 'o': return check_keyword(1, "r", TOKEN_FOR);
+                    case 'n': return TOKEN_FN;
+                }
+            }
+        }
+        case 't':
+            if (scanner.current - scanner.start > 1) {
+                switch (scanner.start[1]) {
+                    case 'h': return check_keyword(2, "is", TOKEN_THIS);
+                    case 'r': return check_keyword(2, "ue", TOKEN_TRUE);
+                }
+            }
+    }
+
+    return TOKEN_IDENTIFIER;
+}
+
+token_type check_keyword(int length, const char* remaining, token_type type) {
+    if (scanner.current - scanner.start == 1 + length &&
+        memcmp(scanner.start + 1 , remaining,  length) == 0) {
+        return type;
+    }
+
+    return TOKEN_IDENTIFIER;
 }
