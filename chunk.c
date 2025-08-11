@@ -4,7 +4,7 @@
 #include "memory.h"
 #include "value.h"
 
-void init_chunk(Chunk* chunk) {
+void init_chunk(Chunk *chunk) {
     chunk->capacity = 0;
     chunk->count = 0;
     chunk->code = NULL;
@@ -12,14 +12,14 @@ void init_chunk(Chunk* chunk) {
     init_value_array(&chunk->constants);
 }
 
-void free_chunk(Chunk* chunk) {
+void free_chunk(Chunk *chunk) {
     FREE_ARRAY(uint8_t, chunk->code, chunk->count);
     FREE_ARRAY(int, chunk->lines, chunk->capacity);
     free_value_array(&chunk->constants);
     init_chunk(chunk);
 }
 
-void write_chunk(Chunk* chunk, uint8_t byte, int line) {
+void write_chunk(Chunk *chunk, uint8_t byte, int line) {
     if (chunk->capacity < chunk->count + 1) {
         int old_cap = chunk->capacity;
         chunk->capacity = GROW_CAPACITY(old_cap);
@@ -34,5 +34,6 @@ void write_chunk(Chunk* chunk, uint8_t byte, int line) {
 
 int add_constant(Chunk *chunk, value_t value) {
     write_value_array(&chunk->constants, value);
-    return chunk->constants.count - 1;  /* return the location where this value was placed. */
+    /* return the location where this value was placed. */
+    return chunk->constants.count - 1;
 }

@@ -7,10 +7,10 @@
 #define STACK_MAX 256
 
 typedef struct {
-    Chunk* chunk;
-    uint8_t* ip;
+    Chunk *chunk;
+    uint8_t *ip;
     value_t stack[STACK_MAX];
-    value_t* stack_top;
+    value_t *stack_top;
 } vm_t;
 
 typedef enum {
@@ -21,7 +21,7 @@ typedef enum {
 
 void init_vm(void);
 void free_vm(void);
-interpret_result interpret(const char* source);
+interpret_result interpret(const char *source);
 interpret_result run(void);
 void reset_stack(void);
 void push(value_t valut);

@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "main.h"
 #include "vm.h"
 
 /* todo: magic numbers. */
-int main(int argc, const char* argv[]) {
+int main(int argc, const char *argv[]) {
     init_vm();
 
     if (argc == 1) {
@@ -36,17 +36,19 @@ void repl(void) {
     }
 }
 
-void run_file(const char* path) {
-    char* source = read_file(path);
+void run_file(const char *path) {
+    char *source = read_file(path);
     interpret_result result = interpret(source);
     free(source);
 
-    if (result == INTERPRET_COMPILE_ERROR) exit(65);
-    if (result == INTERPRET_RUNTIME_ERROR) exit(70);
+    if (result == INTERPRET_COMPILE_ERROR)
+        exit(65);
+    if (result == INTERPRET_RUNTIME_ERROR)
+        exit(70);
 }
 
-char* read_file(const char* path) {
-    FILE* file = fopen(path, "rb");
+char *read_file(const char *path) {
+    FILE *file = fopen(path, "rb");
     if (file == NULL) {
         fprintf(stderr, "failed to open file `%s`.\n", path);
         exit(74);
@@ -56,7 +58,7 @@ char* read_file(const char* path) {
     size_t fsize = ftell(file);
     rewind(file);
 
-    char* buf = (char*) malloc(fsize + 1);
+    char *buf = (char *)malloc(fsize + 1);
     if (buf == NULL) {
         fprintf(stderr, "not enough memory to read `%s`.\n", path);
         exit(74);
