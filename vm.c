@@ -4,6 +4,7 @@
 #include "value.h"
 #include <stdio.h>
 #include "vm.h"
+#include "compiler.h"
 
 vm_t vm;
 
